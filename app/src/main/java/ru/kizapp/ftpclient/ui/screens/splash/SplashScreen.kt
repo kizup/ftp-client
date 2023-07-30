@@ -1,4 +1,4 @@
-package ru.kizapp.ftpclient.presentation.screens
+package ru.kizapp.ftpclient.ui.screens.splash
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -17,16 +17,18 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.kizapp.ftpclient.R
+import ru.kizapp.ftpclient.navigation.NavigationTree
 
 @Composable
 fun SplashScreen(
     navController: NavController,
+    viewModel: SplashViewModel,
 ) {
-    LaunchedEffect(key1 = "splash") {
+    LaunchedEffect(key1 = viewModel) {
         launch {
             delay(500L)
-            navController.navigate("add-connection") {
-                popUpTo("splash") {
+            navController.navigate(NavigationTree.Root.AddConnection.name) {
+                popUpTo(NavigationTree.Root.Splash.name) {
                     inclusive = true
                 }
             }

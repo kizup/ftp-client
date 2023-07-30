@@ -1,4 +1,4 @@
-package ru.kizapp.ftpclient.presentation.screens
+package ru.kizapp.ftpclient.ui.screens.filelist.remote
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

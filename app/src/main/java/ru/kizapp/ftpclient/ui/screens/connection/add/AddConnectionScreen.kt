@@ -1,4 +1,4 @@
-package ru.kizapp.ftpclient.presentation.screens
+package ru.kizapp.ftpclient.ui.screens.connection.add
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,10 +23,14 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun AddConnectionScreen() {
+fun AddConnectionScreen(
+    navController: NavController,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -132,5 +136,5 @@ fun AddConnectionScreen() {
 @Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
 @Composable
 fun AddConnectionScreenPreview() {
-    AddConnectionScreen()
+    AddConnectionScreen(rememberNavController())
 }

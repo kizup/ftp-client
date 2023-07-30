@@ -93,8 +93,7 @@ class FTPClientWrapperImpl : FTPClientWrapper {
                 put("StrictHostKeyChecking", "no")
             }
         )
-        connection.password?.concatToString()?.let { password ->
-            println("Set Password -> $password")
+        connection.password?.let { password ->
             session.setPassword(password)
         }
         if (!continuation.isActive) {

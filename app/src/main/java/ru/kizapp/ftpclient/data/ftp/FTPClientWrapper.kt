@@ -15,5 +15,7 @@ interface FTPClientWrapper {
 
     suspend fun listFiles(dir: String? = null)
 
+    suspend fun navigateUp(): Boolean
+
     suspend fun disconnect()
 }

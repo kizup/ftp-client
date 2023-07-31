@@ -19,9 +19,12 @@ import ru.kizapp.ftpclient.models.exceptions.FailedToConnectException
 import ru.kizapp.ftpclient.utils.getFormattedFileSize
 import java.nio.channels.NotYetConnectedException
 import java.util.Properties
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.coroutines.resumeWithException
 
-class FTPClientWrapperImpl : FTPClientWrapper {
+@Singleton
+class FTPClientWrapperImpl @Inject constructor() : FTPClientWrapper {
 
     private var sftpChannel: ChannelSftp? = null
     private var sftpSession: Session? = null
@@ -72,13 +75,26 @@ class FTPClientWrapperImpl : FTPClientWrapper {
         }
     }
 
+    override suspend fun navigateUp(): Boolean = withContext(Dispatchers.IO) {
+        if (workDirectoryPaths.isNotEmpty()) {
+            listFiles(NAVIGATE_UP)
+            true
+        } else {
+            false
+        }
+    }
+
     override suspend fun disconnect() {
         withContext(Dispatchers.IO) {
             if (!isConnected) {
                 return@withContext
             }
             disconnectFromSftp()
+            pathMutableFlow.emit(emptyList())
+            filesMutableFlow.emit(emptyList())
+            workDirectoryPaths.clear()
             activeConnection = null
+            currentDirectory = null
         }
     }
 
@@ -93,8 +109,7 @@ class FTPClientWrapperImpl : FTPClientWrapper {
                 put("StrictHostKeyChecking", "no")
             }
         )
-        connection.password?.concatToString()?.let { password ->
-            println("Set Password -> $password")
+        connection.password?.let { password ->
             session.setPassword(password)
         }
         if (!continuation.isActive) {
@@ -155,7 +170,7 @@ class FTPClientWrapperImpl : FTPClientWrapper {
             }
 
             pathMutableFlow.tryEmit(ArrayList(workDirectoryPaths))
-            filesMutableFlow.tryEmit(emptyList())
+            //filesMutableFlow.tryEmit(emptyList())
 
             var entries = channel.ls(getCurrentDirectory())
                 .filterIsInstance<LsEntry>()
@@ -207,7 +222,6 @@ class FTPClientWrapperImpl : FTPClientWrapper {
             postfix = UNIX_SEPARATOR,
             prefix = UNIX_SEPARATOR
         )
-            .apply { println("PWD -> $this") }
     }
 
     private val workDirectoryPaths = ArrayList<String>()

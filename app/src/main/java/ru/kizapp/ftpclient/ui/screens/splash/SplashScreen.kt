@@ -27,7 +27,7 @@ fun SplashScreen(
     LaunchedEffect(key1 = viewModel) {
         launch {
             delay(500L)
-            navController.navigate(NavigationTree.Root.AddConnection.name) {
+            navController.navigate(NavigationTree.Root.ConnectionList.name) {
                 popUpTo(NavigationTree.Root.Splash.name) {
                     inclusive = true
                 }

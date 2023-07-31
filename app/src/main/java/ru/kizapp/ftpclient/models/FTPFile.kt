@@ -3,7 +3,7 @@ package ru.kizapp.ftpclient.models
 import androidx.compose.runtime.Stable
 
 @Stable
-class FTPFile(
+data class FTPFile(
     val fileName: String,
     val fileSize: String,
     val isDir: Boolean,

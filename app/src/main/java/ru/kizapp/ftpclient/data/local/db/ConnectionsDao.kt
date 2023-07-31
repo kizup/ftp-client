@@ -4,14 +4,13 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import kotlinx.coroutines.flow.Flow
 import ru.kizapp.ftpclient.models.FTPConnection
 
 @Dao
 interface ConnectionsDao {
 
     @Query("select * from ftp_connections")
-    fun getSavedConnections(): Flow<FTPConnection>
+    suspend fun getSavedConnections(): List<FTPConnection>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun saveConnection(item: FTPConnection)

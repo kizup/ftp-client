@@ -29,8 +29,12 @@ abstract class BaseViewModel<State : Any, Action, Event>(initialState: State) : 
     protected var viewAction: Action?
         get() = _viewActions.replayCache.last()
         set(value) {
-            _viewActions.tryEmit(value)
+            println("Try emit action result: " + _viewActions.tryEmit(value))
         }
+
+    protected fun clearActions() {
+        viewAction = null
+    }
 
     abstract fun obtainEvent(viewEvent: Event)
 }

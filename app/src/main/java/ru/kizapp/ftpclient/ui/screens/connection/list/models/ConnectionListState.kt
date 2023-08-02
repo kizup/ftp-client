@@ -7,4 +7,5 @@ import ru.kizapp.ftpclient.models.FTPConnection
 data class ConnectionListState(
     val connections: List<FTPConnection> = emptyList(),
     val loading: Boolean = true,
+    val connectionForDelete: FTPConnection? = null,
 )

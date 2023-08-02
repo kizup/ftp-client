@@ -1,6 +1,7 @@
 package ru.kizapp.ftpclient.ui.screens.connection.add
 
-import androidx.compose.foundation.background
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -9,21 +10,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -32,11 +37,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ru.kizapp.ftpclient.navigation.NavigationTree
+import ru.kizapp.ftpclient.ui.common.LoadingIndicator
+import ru.kizapp.ftpclient.ui.common.Toolbar
 import ru.kizapp.ftpclient.ui.screens.connection.add.models.AddConnectionAction
 import ru.kizapp.ftpclient.ui.screens.connection.add.models.AddConnectionEvent
 import ru.kizapp.ftpclient.ui.screens.connection.add.models.AddConnectionState
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class)
+@OptIn(
+    ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 fun AddConnectionScreen(
     navController: NavController,
@@ -48,23 +58,25 @@ fun AddConnectionScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
-        InputFields(viewModel = viewModel, viewState = viewState)
+        Toolbar(title = "Add connection") {
+            viewModel.obtainEvent(AddConnectionEvent.OnBackClick)
+        }
+        Box {
+            InputFields(viewModel = viewModel, viewState = viewState)
+            InputFields(viewModel = viewModel, viewState = viewState)
 
-        if (viewState.loading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Gray.copy(alpha = 0.5f)),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator(modifier = Modifier.size(48.dp))
+            if (viewState.loading) {
+                LoadingIndicator()
             }
         }
     }
+
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     LaunchedEffect(key1 = viewAction) {
         viewModel.obtainEvent(AddConnectionEvent.ClearAction)
@@ -80,6 +92,10 @@ fun AddConnectionScreen(
                 }
             }
 
+            AddConnectionAction.GoBack -> {
+                backPressedDispatcher?.onBackPressed()
+            }
+
             null -> Unit
         }
     }
@@ -92,8 +108,7 @@ private fun InputFields(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+            .fillMaxSize(),
     ) {
         val textFieldModifier =
             Modifier

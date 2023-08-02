@@ -1,4 +1,4 @@
-package ru.kizapp.ftpclient.ui.screens.filelist.remote.models
+package ru.kizapp.ftpclient.ui.screens.filelist.remote.list.models
 
 import ru.kizapp.ftpclient.models.FTPFile
 

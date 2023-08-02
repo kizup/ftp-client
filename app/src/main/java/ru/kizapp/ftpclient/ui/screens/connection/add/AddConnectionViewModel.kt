@@ -23,6 +23,10 @@ class AddConnectionViewModel @Inject constructor(
         when (viewEvent) {
             AddConnectionEvent.ClearAction -> clearActions()
             AddConnectionEvent.OnAddClicked -> onAddConnectionClicked()
+            AddConnectionEvent.OnBackClick -> {
+                viewAction = AddConnectionAction.GoBack
+            }
+
             is AddConnectionEvent.OnHostChanged -> {
                 viewState = viewState.copy(connectionHost = viewEvent.host)
             }

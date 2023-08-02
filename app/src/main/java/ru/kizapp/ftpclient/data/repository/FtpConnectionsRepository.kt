@@ -11,6 +11,8 @@ interface FtpConnectionsRepository {
 
     suspend fun loadConnection(id: Int): FTPConnection
 
+    suspend fun deleteConnection(connection: FTPConnection)
+
     class Impl @Inject constructor(
         private val connectionsDao: ConnectionsDao,
     ) : FtpConnectionsRepository {
@@ -24,5 +26,8 @@ interface FtpConnectionsRepository {
 
         override suspend fun loadConnection(id: Int): FTPConnection =
             connectionsDao.loadConnection(id)
+
+        override suspend fun deleteConnection(connection: FTPConnection) =
+            connectionsDao.deleteConnection(connection)
     }
 }

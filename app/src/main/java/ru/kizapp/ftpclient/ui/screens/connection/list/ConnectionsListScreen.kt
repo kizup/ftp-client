@@ -18,10 +18,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -94,6 +94,17 @@ fun ConnectionsListScreen(
                 navController.navigate(NavigationTree.Root.AddConnection.name)
             }
 
+            is ConnectionListAction.ShowEditConnection -> {
+                val showEditConnectionAction = viewAction as ConnectionListAction.ShowEditConnection
+                navController.currentBackStackEntry?.arguments?.putInt(
+                    NavigationTree.Arguments.ConnectionId.name,
+                    showEditConnectionAction.connectionId,
+                )
+                navController.navigate(
+                    NavigationTree.Root.AddConnection.name + "/${showEditConnectionAction.connectionId}"
+                )
+            }
+
             null -> Unit
         }
         viewModel.obtainEvent(ConnectionListEvent.ClearAction)
@@ -159,6 +170,9 @@ private fun ConnectionList(
                 },
                 onDeleteClick = { item ->
                     onEventEmitted(ConnectionListEvent.OnDeleteConnectionClick(item))
+                },
+                onEditClick = { item ->
+                    onEventEmitted(ConnectionListEvent.OnEditConnectionClick(item))
                 }
             )
         }
@@ -171,7 +185,8 @@ private fun ConnectionListItem(
     modifier: Modifier = Modifier,
     item: FTPConnection,
     onItemClick: (FTPConnection) -> Unit,
-    onDeleteClick: (FTPConnection) -> Unit
+    onDeleteClick: (FTPConnection) -> Unit,
+    onEditClick: (FTPConnection) -> Unit,
 ) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp, pressedElevation = 4.dp),
@@ -196,9 +211,22 @@ private fun ConnectionListItem(
                         .fillMaxWidth()
                         .weight(1f),
                 ) {
-                    Text(text = item.host)
-                    Text(text = item.login.orEmpty())
+                    if (item.name.isNullOrBlank()) {
+                        Text(text = item.host)
+                    } else {
+                        Text(text = item.name)
+                        Text(text = item.host)
+                    }
                 }
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .clickable { onEditClick(item) }
+                        .padding(4.dp)
+                )
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = null,

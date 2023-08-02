@@ -13,4 +13,5 @@ data class AddConnectionState(
     val connectionPort: Int = connectionType.defaultPort,
     val userName: String? = null,
     val password: String? = null,
+    val editConnection: Boolean = false,
 )

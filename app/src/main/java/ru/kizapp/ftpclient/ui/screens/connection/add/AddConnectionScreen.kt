@@ -1,34 +1,24 @@
 package ru.kizapp.ftpclient.ui.screens.connection.add
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -43,14 +33,12 @@ import ru.kizapp.ftpclient.ui.screens.connection.add.models.AddConnectionAction
 import ru.kizapp.ftpclient.ui.screens.connection.add.models.AddConnectionEvent
 import ru.kizapp.ftpclient.ui.screens.connection.add.models.AddConnectionState
 
-@OptIn(
-    ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class,
-    ExperimentalMaterial3Api::class
-)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddConnectionScreen(
     navController: NavController,
     viewModel: AddConnectionViewModel,
+    editConnectionId: Int? = null,
 ) {
     val viewAction by viewModel.viewActions().collectAsState(initial = null)
     val viewState by viewModel.viewStates().collectAsState()
@@ -67,8 +55,11 @@ fun AddConnectionScreen(
             viewModel.obtainEvent(AddConnectionEvent.OnBackClick)
         }
         Box {
-            InputFields(viewModel = viewModel, viewState = viewState)
-            InputFields(viewModel = viewModel, viewState = viewState)
+            InputFields(
+                viewModel = viewModel,
+                viewState = viewState,
+                editConnectionId = editConnectionId
+            )
 
             if (viewState.loading) {
                 LoadingIndicator()
@@ -99,12 +90,17 @@ fun AddConnectionScreen(
             null -> Unit
         }
     }
+
+    LaunchedEffect(key1 = viewModel) {
+        viewModel.obtainEvent(AddConnectionEvent.LoadConnection(editConnectionId))
+    }
 }
 
 @Composable
 private fun InputFields(
     viewModel: AddConnectionViewModel,
     viewState: AddConnectionState,
+    editConnectionId: Int?,
 ) {
     Column(
         modifier = Modifier
@@ -155,12 +151,17 @@ private fun InputFields(
             onValueChanged = { viewModel.obtainEvent(AddConnectionEvent.OnPasswordChanged(it)) }
         )
         Button(
-            onClick = { viewModel.obtainEvent(AddConnectionEvent.OnAddClicked) },
+            onClick = { viewModel.obtainEvent(AddConnectionEvent.OnAddClicked(editConnectionId)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
-            Text("Add")
+            val buttonText = if (viewState.editConnection) {
+                "Save"
+            } else {
+                "Add"
+            }
+            Text(text = buttonText)
         }
     }
 }

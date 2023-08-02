@@ -27,10 +27,13 @@ class ConnectionListViewModel @Inject constructor(
         when (viewEvent) {
             ConnectionListEvent.Load -> loadConnections()
             ConnectionListEvent.ClearAction -> clearActions()
-            ConnectionListEvent.OnAddConnectionClick -> onAddConnectionClicked()
+            is ConnectionListEvent.OnAddConnectionClick -> onAddConnectionClicked()
             is ConnectionListEvent.OnConnectionClick -> onConnectClicked(viewEvent.connection)
             is ConnectionListEvent.OnDeleteConnectionClick ->
                 viewState = viewState.copy(connectionForDelete = viewEvent.connection)
+
+            is ConnectionListEvent.OnEditConnectionClick -> viewAction =
+                ConnectionListAction.ShowEditConnection(viewEvent.connection.id)
 
             is ConnectionListEvent.DeleteConnectionConfirmed -> {
                 viewState = viewState.copy(connectionForDelete = null)

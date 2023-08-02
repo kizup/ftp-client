@@ -34,11 +34,20 @@ fun NavigationGraph() {
                 viewModel = splashViewModel,
             )
         }
-        composable(route = NavigationTree.Root.AddConnection.name) {
+        composable(
+            route = NavigationTree.Root.AddConnection.name + "/{${NavigationTree.Arguments.ConnectionId.name}}",
+            arguments = listOf(
+                navArgument(
+                    NavigationTree.Arguments.ConnectionId.name
+                ) { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
             val addConnectionViewModel = hiltViewModel<AddConnectionViewModel>()
+            val connectionId = backStackEntry.arguments?.getInt(NavigationTree.Arguments.ConnectionId.name)
             AddConnectionScreen(
                 navController = navController,
                 viewModel = addConnectionViewModel,
+                editConnectionId = connectionId,
             )
         }
         composable(route = NavigationTree.Root.ConnectionList.name) {

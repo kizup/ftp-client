@@ -9,6 +9,7 @@ object NavigationTree {
 
     enum class Arguments {
         Filename,
+        ConnectionId,
         ;
     }
 }

@@ -8,7 +8,7 @@ import ru.kizapp.ftpclient.data.local.db.Converters
 
 @Entity(tableName = "ftp_connections")
 @TypeConverters(Converters::class)
-class FTPConnection(
+data class FTPConnection(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Int = 0,

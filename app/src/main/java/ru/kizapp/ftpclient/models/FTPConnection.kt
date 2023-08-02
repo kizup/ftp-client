@@ -24,4 +24,6 @@ class FTPConnection(
     // TODO store password is not secure
     @ColumnInfo(name = "password")
     val password: String? = null,
+    @ColumnInfo("connection_name")
+    val name: String? = null,
 )

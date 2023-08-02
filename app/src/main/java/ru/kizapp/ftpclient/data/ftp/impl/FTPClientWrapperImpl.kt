@@ -11,12 +11,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.apache.commons.net.ftp.FTPClient
+import ru.kizapp.ftpclient.data.ftp.DownloadFileMonitor
 import ru.kizapp.ftpclient.data.ftp.FTPClientWrapper
 import ru.kizapp.ftpclient.models.FTPConnection
 import ru.kizapp.ftpclient.models.FTPConnectionType
 import ru.kizapp.ftpclient.models.FTPFile
 import ru.kizapp.ftpclient.models.exceptions.FailedToConnectException
 import ru.kizapp.ftpclient.utils.getFormattedFileSize
+import java.io.File
 import java.nio.channels.NotYetConnectedException
 import java.util.Properties
 import javax.inject.Inject
@@ -24,7 +26,9 @@ import javax.inject.Singleton
 import kotlin.coroutines.resumeWithException
 
 @Singleton
-class FTPClientWrapperImpl @Inject constructor() : FTPClientWrapper {
+class FTPClientWrapperImpl @Inject constructor(
+    private val downloadFileMonitor: DownloadFileMonitor,
+) : FTPClientWrapper {
 
     private var sftpChannel: ChannelSftp? = null
     private var sftpSession: Session? = null
@@ -49,6 +53,9 @@ class FTPClientWrapperImpl @Inject constructor() : FTPClientWrapper {
 
     override val path: Flow<List<String>>
         get() = pathMutableFlow
+
+    override val downloadProgress: Flow<Int>
+        get() = downloadFileMonitor.percentFlow
 
     override suspend fun connect(connection: FTPConnection) =
         suspendCancellableCoroutine { continuation ->
@@ -97,6 +104,21 @@ class FTPClientWrapperImpl @Inject constructor() : FTPClientWrapper {
             currentDirectory = null
         }
     }
+
+    override suspend fun downloadFile(filename: String, target: File) =
+        suspendCancellableCoroutine { continuation ->
+            val channel = sftpChannel
+            if (channel == null) {
+                continuation.resumeWithException(NullPointerException("Channel is null"))
+                return@suspendCancellableCoroutine
+            }
+            val src = getCurrentDirectory() + filename
+            continuation.invokeOnCancellation { downloadFileMonitor.cancel() }
+            channel.get(src, target.outputStream(), downloadFileMonitor)
+            if (continuation.isActive) {
+                continuation.resumeWith(Result.success(Unit))
+            }
+        }
 
     private fun connectToSftp(
         connection: FTPConnection,
@@ -170,8 +192,7 @@ class FTPClientWrapperImpl @Inject constructor() : FTPClientWrapper {
             }
 
             pathMutableFlow.tryEmit(ArrayList(workDirectoryPaths))
-            //filesMutableFlow.tryEmit(emptyList())
-
+            channel.cd(getCurrentDirectory())
             var entries = channel.ls(getCurrentDirectory())
                 .filterIsInstance<LsEntry>()
                 .filterNot { it.filename == "." }

@@ -87,22 +87,6 @@ data class FrontEndColors(
             onPrimary = accentPrimary,
         )
     }
-//@Composable
-//    fun toMaterialColors(): ColorScheme = ColorScheme(
-//        primary = controlPrimary,
-//        //primaryVariant = pressedPrimary,
-//        secondary = controlSecondary,
-//        //secondaryVariant = pressedSecondary,
-//        background = backgroundPrimary,
-//        surface = backgroundPrimary,
-//        error = attentionPrimary,
-//        onPrimary = MaterialTheme.colorScheme.onPrimary,
-//        onSecondary = MaterialTheme.colorScheme.onSecondary,
-//        onBackground = MaterialTheme.colorScheme.onBackground,
-//        onSurface = MaterialTheme.colorScheme.onSurface,
-//        onError = MaterialTheme.colorScheme.onError,
-//        // isLight
-//    )
 }
 
 val LocalFrontEndColors = staticCompositionLocalOf<FrontEndColors> {

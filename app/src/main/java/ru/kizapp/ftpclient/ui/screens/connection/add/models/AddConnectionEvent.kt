@@ -9,4 +9,5 @@ sealed class AddConnectionEvent {
     class OnPortChanged(val port: String) : AddConnectionEvent()
     class OnUserNameChanged(val username: String) : AddConnectionEvent()
     class OnPasswordChanged(val password: String) : AddConnectionEvent()
+    object OnBackClick : AddConnectionEvent()
 }

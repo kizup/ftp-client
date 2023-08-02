@@ -1,5 +1,6 @@
 package ru.kizapp.ftpclient.data.local.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import ru.kizapp.ftpclient.models.FTPConnection
@@ -8,8 +9,11 @@ import ru.kizapp.ftpclient.models.FTPConnection
     entities = [
         FTPConnection::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
+    autoMigrations = [
+        AutoMigration(1, 2),
+    ]
 )
 abstract class FtpDb : RoomDatabase() {
     abstract fun connectionsDao(): ConnectionsDao

@@ -92,6 +92,12 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-insets:$accompanistVersion")
 
+    // Zoomable image
+    implementation("net.engawapg.lib:zoomable:1.5.0-beta1")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
     // Room
     val roomVersion = "2.5.2"
     implementation("androidx.room:room-runtime:$roomVersion")
